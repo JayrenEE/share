@@ -1,0 +1,128 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "wiremock hb-seg-dev",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "servers": [
+    {
+      "url": "https://da-saas-mock-server-feature-SEG-10527-testing.hb-seg-dev.experianone.io"
+    }
+  ],
+  "paths": {
+    "/v1/dataflows/execute/SME_LOAN": {
+      "post": {
+        "tags": [
+          "DataHub"
+        ],
+        "summary": "https://da-saas-mock-server-feature-SEG-10527-testing.hb-seg-dev.experianone.io/v1/dataflows/execute/SME_LOAN",
+        "description": "https://da-saas-mock-server-feature-SEG-10527-testing.hb-seg-dev.experianone.io/v1/dataflows/execute/SME_LOAN",
+        "operationId": "httpsDaSaasMockServerFeatureSeg10527TestingHbSegDevExperianoneIoV1DataflowsExecuteSmeLoan",
+        "parameters": [
+          {
+            "name": "X-Correlation-Id",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "example": "b1cf017a-8e05-4b02-a2c6-1779b1f23f46"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dataSources": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "accountName": {
+                          "type": "string",
+                          "example": "S+"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "GlobalDataNetwork"
+                        },
+                        "version": {
+                          "type": "string",
+                          "example": "1.0.1"
+                        }
+                      }
+                    },
+                    "example": [
+                      {
+                        "accountName": "S+",
+                        "name": "GlobalDataNetwork",
+                        "version": "1.0.1"
+                      }
+                    ]
+                  },
+                  "requestValues": {
+                    "type": "object",
+                    "properties": {
+                      "application": {
+                        "type": "object",
+                        "properties": {
+                          "applicant": {
+                            "type": "object",
+                            "properties": {
+                              "fullname": {
+                                "type": "string",
+                                "example": "zul"
+                              },
+                              "lastname": {
+                                "type": "string",
+                                "example": "ahmad"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "version": {
+                    "type": "string",
+                    "example": "1.0.0"
+                  }
+                }
+              },
+              "example": {
+                "dataSources": [
+                  {
+                    "accountName": "S+",
+                    "name": "GlobalDataNetwork",
+                    "version": "1.0.1"
+                  }
+                ],
+                "requestValues": {
+                  "application": {
+                    "applicant": {
+                      "fullname": "zul",
+                      "lastname": "ahmad"
+                    }
+                  }
+                },
+                "version": "1.0.0"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "DataHub"
+    }
+  ]
+}
