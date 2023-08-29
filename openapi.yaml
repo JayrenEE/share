@@ -1,0 +1,462 @@
+openapi: 3.0.0
+info:
+  title: Data Hub API
+  version: '1.0'
+  description: Data Hub Service API Documentation
+servers:
+  - url: http://localhost:3000/datahub
+tags:
+  - name: Data Flow Execution
+    description: Service used for Data Flow execution.
+paths:
+  /v1/dataflows/execute/{dataFlowName}:
+    parameters:
+      - $ref: '#/components/parameters/dataFlowName'
+    post:
+      summary: Execute A Data Flow By Name
+      operationId: postExecuteDataFlow
+      responses:
+        '200':
+          $ref: '#/components/responses/DataFlowExecutionResults'
+        '401':
+          $ref: '#/components/responses/UnauthorizeError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      requestBody:
+        $ref: '#/components/requestBodies/DataFlowExecutionRequest'
+      tags:
+        - Data Flow Execution
+      description: Execute a data flow by name
+      parameters:
+        - $ref: '#/components/parameters/correlationId'
+        - $ref: '#/components/parameters/bearerAuth'
+components:
+  schemas:
+    ApiModelServiceInfo:
+      title: ApiModelServiceInfo
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/UniqueIdentifier'
+      properties:
+        serviceUri:
+          type: string
+          example: /applications
+        serviceMethod:
+          type: string
+          example: POST
+        apiModelId:
+          type: integer
+          format: int64
+        apiModelName:
+          type: string
+        apiModelVersion:
+          type: string
+    File:
+      type: string
+      title: File
+      format: binary
+    ClientError:
+      title: Client Error
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        reason:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        field:
+          type: string
+        messages:
+          type: array
+          items:
+            type: string
+    UseCase:
+      title: UseCase
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+    DataFlow:
+      title: DataFlow
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      required:
+        - name
+        - version
+        - description
+    DataSource:
+      title: DataSource
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        useCase:
+          type: string
+        funckyDesign:
+          type: string
+          description: Funcky Design f
+        state:
+          type: string
+          description: State of the Data Source
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      required:
+        - name
+        - version
+        - useCase
+        - state
+    UniqueIdentifier:
+      type: object
+      title: UniqueIdentifier
+      format: int64
+      properties:
+        id:
+          type: integer
+          format: int64
+      required:
+        - id
+    DataFlowExecutionRequest:
+      title: DataFlowExecutionRequest
+      type: object
+      properties:
+        version:
+          type: string
+        dataSources:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              version:
+                type: string
+              accountName:
+                type: string
+        requestValues:
+          type: object
+          additionalProperties:
+            type: object
+    DataFlowExecutionResult:
+      title: DataFlowExecutionResult
+      type: object
+      properties:
+        dataSourceName:
+          type: string
+        returnCode:
+          type: integer
+        errorCode:
+          type: string
+        errorDescription:
+          type: string
+        request:
+          type: string
+          format: byte
+        response:
+          type: string
+          format: byte
+    DataFlowResponse:
+      title: DataFlowResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/UniqueIdentifier'
+        - $ref: '#/components/schemas/DataFlow'
+    DataFlowsResponse:
+      title: DataFlowsResponse
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataFlowResponse'
+    DataSourceResponse:
+      title: DataSourceResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/UniqueIdentifier'
+        - $ref: '#/components/schemas/DataSource'
+      properties:
+        serviceInfo:
+          $ref: '#/components/schemas/ApiModelServiceInfo'
+    MappingSchemasResponse:
+      title: MappingSchemasResponse
+      type: object
+      properties:
+        source:
+          type: string
+          description: JSON schema string for the Funcky source panel
+        target:
+          type: string
+          description: JSON schema string for the funcky target panel
+    DataSourcesResponse:
+      title: DataSourcesResponse
+      type: object
+      properties:
+        datasources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataSourceResponse'
+    UseCasesResponse:
+      title: UseCasesResponse
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UseCase'
+    UseCaseAndDataFlowsResponse:
+      title: UseCaseAndDataFlowsResponse
+      type: object
+      properties:
+        usecases:
+          type: array
+          items:
+            $ref: '#/components/schemas/UseCase'
+        dataflows:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataFlowResponse'
+      required:
+        - usecases
+        - dataflows
+    DataSourceRequest:
+      title: DataSourceRequest
+      allOf:
+        - $ref: '#/components/schemas/DataSource'
+        - type: object
+          properties:
+            serviceInfo:
+              $ref: '#/components/schemas/UniqueIdentifier'
+  responses:
+    UseCases:
+      description: Use cases Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UseCasesResponse'
+          examples:
+            Sample Response:
+              value:
+                items:
+                  - name: Acquire_Customers_faster_US
+                  - name: Simple_Use_Case
+    DataFlows:
+      description: List of Data Flows
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataFlowsResponse'
+    DataSources:
+      description: List of data sources for a data flow
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataSourcesResponse'
+    SuccessfulAdd:
+      description: Unique identifier of a successful resource creation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UniqueIdentifier'
+    FunckyMappingFile:
+      description: The Funcky Mapping file
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/File'
+    DataFlowExecutionResults:
+      description: Execution Result for a data flow
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/DataFlowExecutionResult'
+          examples:
+            Sample Response:
+              value:
+                - dataSourceName: PreciseId
+                  returnCode: 200
+                  errorCode: '00'
+                  errorDescription: success
+                  request: ewogICJzb21ldGhpbmciOiAic29tZXRoaW5nIgp9
+                  response: ewogICJzb21ldGhpbmciOiAic29tZXRoaW5nIgp9
+                - dataSourceName: ExpConUSV7
+                  returnCode: 200
+                  errorCode: '00'
+                  errorDescription: success
+                  request: ewogICJzb21ldGhpbmciOiAic29tZXRoaW5nIgp9
+                  response: ewogICJzb21ldGhpbmciOiAic29tZXRoaW5nIgp9
+    MappingSchemas:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MappingSchemasResponse'
+          examples:
+            Sample Example:
+              value:
+                source: >-
+                  {"$schema": "http://json-schema.org/draft-04/schema#","type":
+                  "object","properties": {"subcode": {"type":
+                  "string"},"applicationReference": {"type":
+                  "string"},"comment": {"type": "string"},"countryCode":
+                  {"type": "string"},"rbbid": {"type": "string"}}}
+                target: >-
+                  {"$schema": "http://json-schema.org/draft-04/schema#","type":
+                  "object","properties": {"name": {"type": "string"},"street":
+                  {"type": "string"},"city": {"type": "string"},"postcode":
+                  {"type": "string"},"countryCode": {"type": "string"},"phone":
+                  {"type": "string"},"identificationNumber": {"type":
+                  "string"},"identificationTypeCode": {"type":
+                  "string"},"maxHitCount": {"type": "integer"},"subcode":
+                  {"type": "string"},"applicationReference": {"type":
+                  "string"},"comment": {"type": "string"}}
+    DataSource:
+      description: A single data source
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataSourceResponse'
+    UsecasesAndDataFlows:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UseCaseAndDataFlowsResponse'
+    UnauthorizeError:
+      description: Unauthorized Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ClientError'
+          examples:
+            Unauthorize Error:
+              value:
+                code: '401'
+                message: string
+                reason: string
+                details:
+                  - field: string
+                    messages:
+                      - string
+    ForbiddenError:
+      description: Forbidden Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ClientError'
+          examples:
+            Forbidden Error:
+              value:
+                code: '403'
+                message: string
+                reason: string
+                details:
+                  - field: string
+                    messages:
+                      - string
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ClientError'
+    NotFoundError:
+      description: Resource Not Found Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ClientError'
+    NoContent:
+      description: No Content Response
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    correlationId:
+      name: X-Correlation-Id
+      in: header
+      required: true
+      schema:
+        type: string
+      description: Correlation ID
+    bearerAuth:
+      name: Authorization
+      in: header
+      schema:
+        type: string
+        pattern: ^Bearer\s.+$
+        example: Bearer ZGVtbzpwQDU1dzByZA==
+      required: true
+      description: The token to be used as a bearer token.
+    dataFlowId:
+      name: dataFlowId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Data Flow Unique Identifier
+    dataSourceId:
+      name: dataSourceId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Data Source Unique Identifier
+    dataFlowName:
+      name: dataFlowName
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Data Flow Name
+  requestBodies:
+    NewDataSourceRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataSourceRequest'
+    DataFlowExecutionRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataFlowExecutionRequest'
+    NewDataFlowRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataFlow'
+security:
+  - BearerAuth: []
