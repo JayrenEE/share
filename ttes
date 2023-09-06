@@ -1,0 +1,21 @@
+openapi: 3.0.3
+info:
+  title: LocalBPSTester
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: localhost
+paths:
+  /services/v2/applications/endpoint1:
+    post:
+      summary: dataHub
+      description: dataHub
+      operationId: datahub
+      requestBody:
+        content:
+          text/plain:
+            example: "{\r\n  \"datahub LDS\": {\r\n    \"request\": {\r\n      \"dataSources\": [\r\n        {\r\n          \"version\": \"string\",\r\n          \"accountName\": \"string\",\r\n          \"name\": \"string\"\r\n        }\r\n      ],\r\n      \"version\": \"string\"\r\n    },\r\n    \"response\": [\r\n      {\r\n        \"response\": {},\r\n        \"dataSourceName\": \"string\",\r\n        \"errorDescription\": \"string\",\r\n        \"returnCode\": 999,\r\n        \"errorCode\": \"string\",\r\n        \"request\": {}\r\n      }\r\n    ]\r\n  }"
+      responses:
+        '200':
+          description: ''
+tags: []
